@@ -1,13 +1,22 @@
 const { Post, Tag } = require('../models')
 
 async function create(req, res, next) {
-  const {title, body, tags} = req.body
-    const post = await req.params
-    if (!(title && body))
-    return res.status(400)
-    res.status(200).json(user)
-   
-  } 
+  const {title, body, tags} = req.body 
+  try {
+  const newPost = await new Post ({
+    title,
+    body,
+    tags
+  })
+  if (!(title && body)) {
+    return res.status(400).send('post must include a title and body')    
+  };
+  await newPost.save()
+  res.status(200).json(Post)
+ } catch {
+    res.status(500).send(err.message)
+  }
+} 
 
   // TODO: create a new post
   // if there is no title or body, return a 400 status
@@ -82,14 +91,19 @@ async function update(req, res) {
   try {
     const {title, body, tags} = req.body
     const postId = req.params.id
-    // TODO: update a post
-    // if there is no title or body, return a 400 status
-    // omitting tags is OK
-    // find and update the post with the title, body, and tags
-    // return the updated post as json
-  } catch(err) {
+  
+    const post = await Post.findOneAndUpdate(
+      postId,
+      {title, body, tags},
+      {new: true}
+    )
+    if (!postId, title, body) {
+    return res.status(400).send('postId title and body required')
+    }
+    res.status(200).json(Post)
+    } catch (err) {
     res.status(500).send(err.message)
-  }
+    }
 }
 
 async function remove(req, res, next) {
