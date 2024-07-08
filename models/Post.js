@@ -2,6 +2,13 @@ const { Schema, model, SchemaTypes, models} = require('mongoose');
 const CommentSchema = require('./Comment')
 
 const PostSchema = new Schema({
+  title: { type: String, required: true, UNIQUE: true},
+  body: {type: String, required: true},
+  createdAt: {type: Date, default: Date.now},
+  comments: [CommentSchema],
+  tags: [{type: SchemaTypes.ObjectId, ref: 'Tag'}],
+  slug: {type: String}
+
 // Create an "title" property with type String that is required and unique
 // Create an "body" property with type String that is required
 // Create a "createdAt" property with type Date and set default to Date.now
