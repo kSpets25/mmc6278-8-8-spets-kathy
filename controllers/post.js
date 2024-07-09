@@ -9,7 +9,7 @@ async function create(req, res, next) {
     tags
   })
   if (!(title && body)) {
-    return res.status(400).send('post must include a title and body')    
+    return res.status(400).send('post must include title and body')    
   };
   await newPost.save()
   res.status(200).json(Post)
@@ -17,7 +17,6 @@ async function create(req, res, next) {
     res.status(500).send(err.message)
   }
 } 
-
   // TODO: create a new post
   // if there is no title or body, return a 400 status
   // omitting tags is OK
@@ -29,6 +28,9 @@ async function create(req, res, next) {
 async function get(req, res) {
   try {
     const slug = req.params.slug
+    const post = await Post.findBy(slug).lean()
+      .populate({path:'post', select:'tags'})
+    res.json(slug)
     // TODO: Find a single post
     // find a single post by slug and populate 'tags'
     // you will need to use .lean() or .toObject()
@@ -91,23 +93,34 @@ async function update(req, res) {
   try {
     const {title, body, tags} = req.body
     const postId = req.params.id
-  
+    
     const post = await Post.findOneAndUpdate(
-      postId,
+      {_id: postId},
       {title, body, tags},
       {new: true}
     )
-    if (!postId, title, body) {
-    return res.status(400).send('postId title and body required')
-    }
-    res.status(200).json(Post)
-    } catch (err) {
+    if (!title && body) {return res.status(400).send('title and body required')
+    } 
+    res.status(200).json(post)
+  } catch (err) {
     res.status(500).send(err.message)
     }
 }
+// TODO: update a post
+    // if there is no title or body, return a 400 status
+    // omitting tags is OK
+    // find and update the post with the title, body, and tags
+    // return the updated post as json
 
 async function remove(req, res, next) {
   const postId = req.params.id
+  try {
+    const post = await Post.findByIdAndDelete(postId)
+    if (!post) return res.status(404).send('no post found')
+    res.status(200).json(post)
+  } catch (err) {
+    res.status(500).send(err.message)
+  }
   // TODO: Delete a post
   // delete post by id, return a 200 status
 }
