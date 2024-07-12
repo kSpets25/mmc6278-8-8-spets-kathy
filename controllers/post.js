@@ -28,9 +28,10 @@ async function create(req, res, next) {
 async function get(req, res) {
   try {
     const slug = req.params.slug
+    const mongoQuery = {}
     const post = await Post.findOne(slug).lean()
       .populate({path:'post', select:'tags'})
-      res.json(slug)
+      //res.json(slug)
       // TODO: Find a single post
       // find a single post by slug and populate 'tags'
       // you will need to use .lean() or .toObject()
