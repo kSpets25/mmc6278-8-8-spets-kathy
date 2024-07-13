@@ -8,7 +8,7 @@ async function create(req, res, next) {
     body,
     tags
   })
-  if (!(title && body)) {
+  if (!(title && body)){
     return res.status(400).send('post must include title and body')    
   };
   await newPost.save()
@@ -30,9 +30,7 @@ async function get(req, res) {
     const slug = req.params.slug
     const post = await Post.findOne({slug: slug}).lean()
       .populate({path: 'tags'})
-      // TODO: Find a single post
-      // find a single post by slug and populate 'tags'
-      // you will need to use .lean() or .toObject()
+    
     post.createdAt = new Date(post.createdAt).toLocaleString('en-US', {
       month: '2-digit',
       day: '2-digit',
@@ -50,6 +48,9 @@ async function get(req, res) {
   } catch(err) {
     res.status(500).send(err.message)
   }
+   // TODO: Find a single post
+      // find a single post by slug and populate 'tags'
+      // you will need to use .lean() or .toObject()
 }
 
 // should render HTML
@@ -90,16 +91,15 @@ async function getAll(req, res) {
 
 async function update(req, res) {
   try {
+    
     const {title, body, tags} = req.body
     const postId = req.params.id
-    
+    if (!title || !body) {return res.status(400).send('title and body required')}
     const post = await Post.findOneAndUpdate(
       {_id: postId},
-      {title, body, tags},
+      {title: title, body: body, tags: tags},
       {new: true}
     )
-    if (!title && body) {return res.status(400).send('title and body required')
-    } 
     res.status(200).json(post)
   } catch (err) {
     res.status(500).send(err.message)
