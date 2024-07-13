@@ -16,22 +16,20 @@ async function create(req, res, next) {
  } catch {
     res.status(500).send(err.message)
   }
-} 
+
   // TODO: create a new post
   // if there is no title or body, return a 400 status
   // omitting tags is OK
   // create a new post using title, body, and tags
   // return the new post as json and a 200 status
-
+}
 
 // should render HTML
 async function get(req, res) {
   try {
     const slug = req.params.slug
-    const mongoQuery = {}
-    const post = await Post.findOne(slug).lean()
-      .populate({path:'post', select:'tags'})
-      //res.json(slug)
+    const post = await Post.findOne({slug: slug}).lean()
+      .populate({path: 'tags'})
       // TODO: Find a single post
       // find a single post by slug and populate 'tags'
       // you will need to use .lean() or .toObject()
